@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "title": "Solar Water Pumps",
+    "feature_img_url": "https://example.com/image1.jpg",
+    "summary_short": "Clean water access for remote villages.",
+    "intro_short": "Installing solar-powered pumps.",
+    "impact": "Improved health and agricultural productivity.",
+    "original_source_url": "https://example.com/project1",
+    "sector_id": 1
+  },
+  {
+    "id": 2,
+    "title": "Digital Literacy for Women",
+    "feature_img_url": "https://example.com/image2.jpg",
+    "summary_short": "Training women in computer skills.",
+    "intro_short": "Free workshops in rural areas.",
+    "impact": "Increased employment opportunities.",
+    "original_source_url": "https://example.com/project2",
+    "sector_id": 2
+  }
+]
