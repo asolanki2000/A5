@@ -1,5 +1,5 @@
 /********************************************************************************
-*  WEB322 – Assignment 05
+*  WEB322 – Assignment 06
 * 
 *  I declare that this assignment is my own work in accordance with Seneca's
 *  Academic Integrity Policy:
@@ -8,7 +8,7 @@
 * 
 *  Name: Ashish Dilipbhai Solanki Student ID: 128266228 Date: 07/26/2025
 *
-*  Published URL: ___________________________________________________________
+*  Published URL: https://a5-hr6m6k3q1-ashish-solankis-projects.vercel.app/
 *
 ********************************************************************************/
 
@@ -65,28 +65,28 @@ const Project = sequelize.define('Project', {
 // Define relationship
 Project.belongsTo(Sector, { foreignKey: 'sector_id' });
 
-// Function to initialize DB
+/* -------------------- Service functions -------------------- */
+
+// Initialize DB (A5)
 function initialize() {
   return sequelize.sync();
 }
 
-// Get all projects
+// Read
 function getAllProjects() {
   return Project.findAll({ include: [Sector] });
 }
 
-// Get project by ID
 function getProjectById(id) {
   return Project.findAll({
     where: { id },
     include: [Sector]
-  }).then(data => {
-    if (data.length > 0) return data[0];
-    else throw "Unable to find requested project";
+  }).then(rows => {
+    if (rows.length > 0) return rows[0];
+    throw 'Unable to find requested project';
   });
 }
 
-// Get projects by sector name
 function getProjectsBySector(sectorName) {
   return Project.findAll({
     include: [Sector],
@@ -95,13 +95,45 @@ function getProjectsBySector(sectorName) {
         [Op.iLike]: `%${sectorName}%`
       }
     }
-  }).then(data => {
-    if (data.length > 0) return data;
-    else throw "Unable to find requested projects";
+  }).then(rows => {
+    if (rows.length > 0) return rows;
+    throw 'Unable to find requested projects';
   });
 }
 
-// Export functions
+// Create
+function addProject(projectData) {
+  return Project.create(projectData)
+    .then(() => {})
+    .catch(err => {
+      throw (err?.errors?.[0]?.message || err);
+    });
+}
+
+// Update
+function editProject(id, projectData) {
+  return Project.update(projectData, { where: { id } })
+    .then(() => {})
+    .catch(err => {
+      throw (err?.errors?.[0]?.message || err);
+    });
+}
+
+// Delete
+function deleteProject(id) {
+  return Project.destroy({ where: { id } })
+    .then(() => {})
+    .catch(err => {
+      throw (err?.errors?.[0]?.message || err);
+    });
+}
+
+// Sectors list
+function getAllSectors() {
+  return Sector.findAll();
+}
+
+/* -------------------- Exports -------------------- */
 module.exports = {
   initialize,
   getAllProjects,
@@ -112,12 +144,3 @@ module.exports = {
   editProject,
   deleteProject
 };
-
-function deleteProject(id) {
-  return Project.destroy({
-    where: { id }
-  }).then(() => {})
-    .catch(err => {
-      throw err.errors?.[0]?.message || err;
-    });
-}

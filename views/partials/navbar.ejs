@@ -1,9 +1,22 @@
-<nav class="bg-gray-800 text-white px-4 py-3 flex justify-between">
-  <div class="text-lg font-bold">
-    <a href="/">WEB322 Projects</a>
-  </div>
-  <ul class="flex space-x-4">
-    <li><a class="<%= (page == '/solutions/projects') ? 'font-bold underline' : '' %>" href="/solutions/projects">Projects</a></li>
-    <li><a class="<%= (page == '/solutions/addProject') ? 'font-bold underline' : '' %>" href="/solutions/addProject">Add Project</a></li>
-  </ul>
-</nav>
+<% if (session.user) { %>
+<li>
+  <details>
+    <summary>Account: <%= session.user.userName %></summary>
+    <ul class="p-2 right-0">
+      <li><a class="<%= (page == "/solutions/addProject") ? 'active' : '' %>" href="/solutions/addProject">Add Project</a></li>
+      <li><a class="<%= (page == "/userHistory") ? 'active' : '' %>" href="/userHistory">User History</a></li>
+      <li><a href="/logout">Log Out</a></li>
+    </ul>
+  </details>
+</li>
+<% } else { %>
+<li>
+  <details>
+    <summary>Account</summary>
+    <ul class="p-2 right-0">
+      <li><a class="<%= (page == "/login") ? 'active' : '' %>" href="/login">Login</a></li>
+      <li><a class="<%= (page == "/register") ? 'active' : '' %>" href="/register">Register</a></li>
+    </ul>
+  </details>
+</li>
+<% } %>

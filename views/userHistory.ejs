@@ -1,0 +1,30 @@
+<%- include('partials/navbar', { page: '/userHistory' }) %>
+
+<div class="container mx-auto py-8">
+  <div class="mb-6">
+    <h1 class="text-3xl font-bold">User History</h1>
+    <p class="text-gray-600 mt-2">
+      <strong>User:</strong> <%= session.user.userName %><br/>
+      <strong>Email:</strong> <%= session.user.email %>
+    </p>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="table w-full">
+      <thead>
+        <tr>
+          <th>Login Date/Time</th>
+          <th>Client Information</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% (session.user.loginHistory || []).forEach(item => { %>
+          <tr>
+            <td><%= new Date(item.dateTime).toLocaleString() %></td>
+            <td><%= item.userAgent %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
