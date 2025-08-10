@@ -150,41 +150,32 @@ app.use((req, res) => {
 
 const HTTP_PORT = process.env.PORT || 8080;
 
-projectService.initialize()
-  .then(authData.initialize)
-  .then(() => {
-    app.listen(HTTP_PORT, () => console.log(`Server listening on ${HTTP_PORT}`));
-  })
-  .catch(err => {
-    console.log(`unable to start server: ${err}`);
-  });
-
-// --- Startup / Export for Vercel ---
-const HTTP_PORT = process.env.PORT || 8080;
-
-// make sure both data layers are initialized once
+// One-time init for both data layers
 const boot = Promise.resolve()
-  .then(() => projectData.initialize())     // your Postgres/Sequelize init (modules/projects.js)
-  .then(() => authData.initialize())        // your Mongo/Mongoose init (modules/auth-service.js)
+  .then(() => projectService.initialize()) // Postgres/Sequelize init
+  .then(() => authData.initialize())       // Mongo/Mongoose init
+  .then(() => console.log("Services initialized (Postgres + Mongo)"))
   .catch((err) => {
-    console.error("Unable to initialize services:", err);
+    console.error("BOOT ERROR:", err && err.stack ? err.stack : err);
     throw err;
   });
 
 if (process.env.VERCEL) {
-  // On Vercel: export the app and ensure init completed before handling requests
+  // On Vercel: ensure init completed before handling requests,
+  // and export the app instead of calling app.listen
   app.use(async (req, res, next) => {
     try {
       await boot;
       next();
     } catch (e) {
+      console.error("Request blocked due to failed boot:", e);
       res.status(500).send("Server initialization failed.");
     }
   });
 
-  module.exports = app; // <-- critical for Vercel
+  module.exports = app; // required by Vercel
 } else {
-  // Local dev: start the server normally
+  // Local dev: start the HTTP server normally
   boot
     .then(() => {
       app.listen(HTTP_PORT, () =>
@@ -192,6 +183,6 @@ if (process.env.VERCEL) {
       );
     })
     .catch((err) => {
-      console.error(`unable to start server: ${err}`);
+      console.error("Unable to start server:", err);
     });
 }
