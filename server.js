@@ -158,3 +158,40 @@ projectService.initialize()
   .catch(err => {
     console.log(`unable to start server: ${err}`);
   });
+
+// --- Startup / Export for Vercel ---
+const HTTP_PORT = process.env.PORT || 8080;
+
+// make sure both data layers are initialized once
+const boot = Promise.resolve()
+  .then(() => projectData.initialize())     // your Postgres/Sequelize init (modules/projects.js)
+  .then(() => authData.initialize())        // your Mongo/Mongoose init (modules/auth-service.js)
+  .catch((err) => {
+    console.error("Unable to initialize services:", err);
+    throw err;
+  });
+
+if (process.env.VERCEL) {
+  // On Vercel: export the app and ensure init completed before handling requests
+  app.use(async (req, res, next) => {
+    try {
+      await boot;
+      next();
+    } catch (e) {
+      res.status(500).send("Server initialization failed.");
+    }
+  });
+
+  module.exports = app; // <-- critical for Vercel
+} else {
+  // Local dev: start the server normally
+  boot
+    .then(() => {
+      app.listen(HTTP_PORT, () =>
+        console.log(`Server listening on ${HTTP_PORT}`)
+      );
+    })
+    .catch((err) => {
+      console.error(`unable to start server: ${err}`);
+    });
+}
