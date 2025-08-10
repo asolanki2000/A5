@@ -49,6 +49,9 @@ function ensureLogin(req, res, next) {
   next();
 }
 
+app.use(express.static('public'));
+
+
 /* ---------------------- Public routes (read-only) ---------------------- */
 
 app.get('/', (req, res) => res.redirect('/solutions/projects'));
